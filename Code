@@ -1,0 +1,98 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+public class RoundRobin
+{
+    static void Data(int quant, int pidLength, int pid[], int burstTime[])
+    {
+        int numcontextswitches = 0;
+        int contextswitchtime = 0;
+        int totalexecutiontime = 0;
+        int contextSwitch = 0;
+        int numWaitTime = 0;
+        int throughput = 0;
+        int waitTime[] = new int[pidLength];
+        int a[] = new int[pidLength];
+        int averageWaitingTime = 0;
+        int A = 0;
+        averageTurnAroundTime(pid, waitTime, a, pidLength, burstTime);
+        //System.out.println("Waiting time  |  Turn around time");
+        for (int i=0; i<pidLength; i++)
+        {
+            averageWaitingTime += waitTime[i];
+            numWaitTime++;
+            A = a[i] + A;
+            //System.out.println(waitTime[i] +  "                " + x[i]);
+            contextSwitch++;
+        }
+        for(int i = 0; i <burstTime.length; i++)
+        {
+            totalexecutiontime += burstTime[i];
+        }
+        for(int i = 0; i < pid.length; i++)
+        {
+            numcontextswitches++;
+        }
+        contextswitchtime = totalexecutiontime-(averageWaitingTime+ totalexecutiontime);
+        throughput = totalexecutiontime/pid.length;
+        System.out.println("CPU Utilization: " + ((1-((contextswitchtime+numcontextswitches)/totalexecutiontime))*100) + "%");    
+        System.out.println("Throughput: " + throughput);        
+        System.out.println("Average Waiting Time: " + averageWaitingTime);
+        System.out.println("Average Turnaround Time: " + A/pidLength);
+    }
+
+    static void averageTurnAroundTime(int pid[], int waitTime[], int x[], int pidLength, int burst[])
+    {
+        for (int i = 0; i < pidLength ; i++)
+        {
+            x[i] = waitTime[i] + burst[i];
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        String path = "C:\\Users\\AkibKazi\\Desktop\\Info.csv";
+        String temp = "";
+        int[] pid = new int[]{1,2,3,4};
+        int[] arrival = new int[]{2,3,5,3};
+        int[] burst = new int[]{9,2,12,4};
+
+        System.out.print("Process ID:      ");
+        for (int i: pid){
+            System.out.print(i + " ");
+        }
+        System.out.println();
+        System.out.print("Arrival Time:    ");
+        for (int j: arrival){
+            System.out.print(j + " ");
+        }
+        System.out.println();
+        System.out.print("Burst Time:      ");
+        for (int k: burst){
+            System.out.print(k + " ");
+        }
+        System.out.println();
+        System.out.println();
+
+        int quant = 7;
+        int pidLength = pid.length;
+        try{
+            BufferedReader br = new BufferedReader(new FileReader(path));
+            String[] values = new String[]{};
+            while((temp= br.readLine()) != null){
+                values = temp.split(",");
+            }
+        }catch(FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+        Data(quant, pidLength, pid, burst);
+    }
+
+}
